@@ -1097,7 +1097,9 @@ class Coder:
         if self.gpt_prompts.system_reminder:
             main_sys += "\n" + self.fmt_system_prompt(self.gpt_prompts.system_reminder)
 
-        chunks = ChatChunks()
+        chunks = ChatChunks(
+            use_alternating_roles=self.main_model.use_alternating_roles,
+        )
 
         if self.main_model.use_system_prompt:
             chunks.system = [

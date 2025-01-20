@@ -12,9 +12,39 @@ class ChatChunks:
     chat_files: List = field(default_factory=list)
     cur: List = field(default_factory=list)
     reminder: List = field(default_factory=list)
+    use_alternating_roles: bool = False
+
+    def _ensure_alternating(self, messages):
+        """Ensure messages alternate between user and assistant roles."""
+        if not messages:
+            return []
+            
+        result = []
+        last_role = None
+        
+        for msg in messages:
+            current_role = msg.get("role")
+            if not current_role or current_role == "system":
+                result.append(msg)
+                continue
+            
+            if last_role == current_role:
+                # Insert bridging message
+                bridge_role = "assistant" if current_role == "user" else "user"
+                result.append({
+                    "role": bridge_role,
+                    "content": "Continuing." if bridge_role == "assistant" else "Please proceed."
+                })
+            
+            result.append(msg)
+            last_role = current_role
+            
+        return result
 
     def all_messages(self):
-        return (
+        """Combine all chunks and ensure proper message alternation."""
+        # First combine all messages
+        all_msgs = (
             self.system
             + self.examples
             + self.readonly_files
@@ -24,6 +54,11 @@ class ChatChunks:
             + self.cur
             + self.reminder
         )
+        
+        # Then ensure proper alternation
+        if self.use_alternating_roles:
+            return self._ensure_alternating(all_msgs)
+        return all_msgs
 
     def add_cache_control_headers(self):
         if self.examples:
@@ -55,7 +90,7 @@ class ChatChunks:
         messages[-1]["content"] = [content]
 
     def cacheable_messages(self):
-        messages = self.all_messages()
+        messages = self.all_messages()  # This now returns alternating messages
         for i, message in enumerate(reversed(messages)):
             if isinstance(message.get("content"), list) and message["content"][0].get(
                 "cache_control"

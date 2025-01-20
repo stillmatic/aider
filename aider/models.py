@@ -100,6 +100,7 @@ class ModelSettings:
     streaming: bool = True
     editor_model_name: Optional[str] = None
     editor_edit_format: Optional[str] = None
+    use_alternating_roles: bool = False
 
 
 # https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo
@@ -672,6 +673,7 @@ MODEL_SETTINGS = [
         use_temperature=False,
         examples_as_sys_msg=True,
         caches_by_default=True,
+        use_alternating_roles=True,
         extra_params={
             "max_tokens": 8192,
         },
