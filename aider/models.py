@@ -76,6 +76,7 @@ MODEL_ALIASES = {
     "3": "gpt-3.5-turbo",
     # Other models
     "deepseek": "deepseek/deepseek-chat",
+    "deepseek-r1": "deepseek/deepseek-reasoner",
     "flash": "gemini/gemini-2.0-flash-exp",
 }
 
@@ -659,6 +660,17 @@ MODEL_SETTINGS = [
         use_repo_map=True,
         examples_as_sys_msg=True,
         reminder="sys",
+        caches_by_default=True,
+        extra_params={
+            "max_tokens": 8192,
+        },
+    ),
+    ModelSettings(
+        "deepseek/deepseek-reasoner",
+        "diff",
+        use_repo_map=True,
+        use_temperature=False,
+        examples_as_sys_msg=True,
         caches_by_default=True,
         extra_params={
             "max_tokens": 8192,
